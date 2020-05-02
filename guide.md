@@ -1,9 +1,6 @@
 Sources: 
 
-PUG: https://auth0.com/blog/create-a-simple-and-stylish-node-express-app/
-
-Handlebars: https://medium.com/@waelyasmina/a-guide-into-using-handlebars-with-your-express-js-application-22b944443b65
-
+https://www.twilio.com/blog/how-to-build-a-cli-with-node-js
 
 1- npm init -y
 2- Create a .gitignore file 
