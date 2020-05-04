@@ -6,7 +6,9 @@ CREATE TABLE employee (
   last_name varchar(30) NOT NULL,
   role_id int,
   manager_id int,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (role_id)
+	REFERENCES employee_role (id)
 );
 
 CREATE TABLE employee_role (
@@ -14,7 +16,9 @@ CREATE TABLE employee_role (
   title varchar(30) NOT NULL,
   salary decimal(10,2) NOT NULL,
   department_id int,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (department_id)
+	REFERENCES employee_department (id)
 );
 
 CREATE TABLE employee_department (

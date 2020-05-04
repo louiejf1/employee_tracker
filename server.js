@@ -1,25 +1,25 @@
 // index.js
 
-/**
- * Required External Modules
- */
-const express = require("express");
-const path = require("path");
+//Required External Modules
 const inquirer = require('inquirer');
-const fs = require("fs");
-const util = require('util');
-const axios = require("axios"); //https://www.npmjs.com/package/axios
+const mysql = require('mysql');
 
-/**
- * App Variables
- */
-const app = express();
-const port = process.env.PORT || "8000";
 
-/**
- *  App Configuration
- */
+// Start My SQL connection
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'sqlpassword',
+  database: 'employee_tracker'
+});
+// End My SQL connection
 
+connection.connect();
+
+
+
+
+// Prompt user for first action------------------------------------------------------------------------------------
 let promptUser = () => {
 
   inquirer
@@ -30,10 +30,9 @@ let promptUser = () => {
         name: 'action',
         message: 'What do you want to do?',
         choices: [
-          'Create User',
-          'Remove User',
-          'Update User',
-          'Delete User'
+          'Add',
+          'View',
+          'Update'
         ]
       }
 
@@ -41,51 +40,168 @@ let promptUser = () => {
     .then(answers => {
       // Use user feedback for... whatever!!
 
-      if (answers === 'Create User') {
-        console.log(JSON.stringify(answers));
-      }
-      if (answers === 'Remove User') {
-        console.log(JSON.stringify(answers));
-      }
-      if (answers === 'Update User') {
-        console.log(JSON.stringify(answers));
-      }
-      else(answers === 'Delete User') {
-        console.log(JSON.stringify(answers));
+      if (answers.action === 'Add') {
+        addMenu(); // add Menu function being passed here
       }
 
+      if (answers.action === 'View') {
+        viewMenu(); // view Menu function being passed here
+      }
+
+      if (answers.action === 'Update') {
+        updateMenu(); // view Menu function being passed here
+      }
+
+    })
+
+    .catch(error => {
+      if (error.isTtyError) {
+        console.log("Prompt couldn't be rendered in the current environment");
+      }
     });
-  // .catch(error => {
-  //   if (error.isTtyError) {
-  //     // Prompt couldn't be rendered in the current environment
-  //   } else {
-  //     // Something else when wrong
-  //   }
-  // });
 
 }
 
+
+// Prompt user for what to add------------------------------------------------------------------------------------
+const addMenu = () => {
+
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        type: 'list',
+        name: 'action',
+        message: 'What would you like to add to?',
+        choices: [
+          'Employee',
+          'Role',
+          'Department'
+        ]
+      }
+
+    ])
+
+    .then(answers => {
+      // Use user feedback for... whatever!!
+
+      if (answers.action === 'Employee') {
+        addEmployee();
+      }
+      if (answers.action === 'Role') {
+        addRole();
+      }
+      if (answers.action === 'Department') {
+        addDepartment();
+      }
+
+    })
+}
+
+
+// Prompt user for what to add Department ------------------------------------------------------------------------------------
+const addDepartment = (
+
+) => {
+
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        type: 'input',
+        name: 'department_name',
+        message: 'What is the department name?',
+      }
+    ])
+
+    .then(answers => {
+      // Use user feedback for... whatever!!
+
+      connection.query("INSERT INTO employee_department (name) VALUES(?)", [answers.department_name], function (err, data) {
+        if (err) throw err;
+      })
+      console.log(answers.department_name + " Added");
+    })
+}
+
+// Prompt user for new employee details------------------------------------------------------------------------------------
+const addEmployee = (
+
+) => {
+
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        type: 'input',
+        name: 'first_name',
+        message: 'What is the employees first name?',
+      },
+      {
+        type: 'input',
+        name: 'last_name',
+        message: 'What is the employees last name?',
+      }
+    ])
+
+    .then(answers => {
+      // Use user feedback for... whatever!!
+
+      connection.query("INSERT INTO employee (first_name, last_name) VALUES(?,?)", [answers.first_name, answers.last_name], function (err, data) {
+        if (err) throw err;
+      })
+      console.log("Employee Added");
+    })
+}
+
+
+// Prompt user for Role Details------------------------------------------------------------------------------------
+const addRole = (
+
+  ) => {
+  
+    inquirer
+      .prompt([
+        /* Pass your questions in here */
+        {
+          type: 'input',
+          name: 'title',
+          message: 'What is the employees title?',
+        },
+        {
+          type: 'input',
+          name: 'salary',
+          message: 'What is the employees salary?',
+        },
+        {
+          type: 'input',
+          name: 'department_id',
+          message: 'What is the employees department_id?',
+        }
+      ])
+  
+      .then(answers => {
+        // Use user feedback for... whatever!!
+  
+        connection.query("INSERT INTO employee_role (title, salary, department_id) VALUES(?,?)", [answers.title, answers.salary, answers.department_id], function (err, data) {
+          if (err) throw err;
+        })
+        console.log("Role Added");
+      })
+  }
+
+
+// // Prompt user for what to view------------------------------------------------------------------------------------
+// const viewMenu = () => {
+
+
+// }
+
+// Prompt user for what to update------------------------------------------------------------------------------------
+// const updateMenu = () => {
+
+
+// }
+
+
 promptUser();
-
-//Create User
-//Remove User
-//Update User
-//Delete User
-
-//View All by Department
-//View All by Manager
-
-
-/**
- * Routes Definitions
- */
-app.get("/", (req, res) => {
-  res.status(200).send("Server Running");
-});
-
-/**
- * Server Activation
- */
-app.listen(port, () => {
-  console.log(`Listening to requests on http://localhost:${port}`);
-});
