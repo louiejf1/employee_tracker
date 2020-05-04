@@ -99,6 +99,44 @@ const addMenu = () => {
 }
 
 
+// Prompt user for what to view------------------------------------------------------------------------------------
+const viewMenu = () => {
+
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        type: 'list',
+        name: 'action',
+        message: 'What would you like to view?',
+        choices: [
+          'Employee',
+          'Role',
+          'Department'
+        ]
+      }
+
+    ])
+
+    .then(answers => {
+      // Use user feedback for... whatever!!
+
+      if (answers.action === 'Employee') {
+        viewEmployee();
+      }
+      if (answers.action === 'Role') {
+        viewRole();
+      }
+      if (answers.action === 'Department') {
+        viewDepartment();
+      }
+
+    })
+}
+
+
+
+
 // Prompt user for what to add Department ------------------------------------------------------------------------------------
 const addDepartment = (
 
@@ -121,6 +159,7 @@ const addDepartment = (
         if (err) throw err;
       })
       console.log(answers.department_name + " Added");
+      connection.end();
     })
 }
 
@@ -141,16 +180,22 @@ const addEmployee = (
         type: 'input',
         name: 'last_name',
         message: 'What is the employees last name?',
+      },
+      {
+        type: 'input',
+        name: 'role_id',
+        message: 'What is the employees role_id?',
       }
     ])
 
     .then(answers => {
       // Use user feedback for... whatever!!
 
-      connection.query("INSERT INTO employee (first_name, last_name) VALUES(?,?)", [answers.first_name, answers.last_name], function (err, data) {
+      connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES(?,?,?)", [answers.first_name, answers.last_name, answers.role_id], function (err, data) {
         if (err) throw err;
       })
       console.log("Employee Added");
+      connection.end();
     })
 }
 
@@ -158,50 +203,54 @@ const addEmployee = (
 // Prompt user for Role Details------------------------------------------------------------------------------------
 const addRole = (
 
-  ) => {
-  
-    inquirer
-      .prompt([
-        /* Pass your questions in here */
-        {
-          type: 'input',
-          name: 'title',
-          message: 'What is the employees title?',
-        },
-        {
-          type: 'input',
-          name: 'salary',
-          message: 'What is the employees salary?',
-        },
-        {
-          type: 'input',
-          name: 'department_id',
-          message: 'What is the employees department_id?',
-        }
-      ])
-  
-      .then(answers => {
-        // Use user feedback for... whatever!!
-  
-        connection.query("INSERT INTO employee_role (title, salary, department_id) VALUES(?,?)", [answers.title, answers.salary, answers.department_id], function (err, data) {
-          if (err) throw err;
-        })
-        console.log("Role Added");
+) => {
+
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        type: 'input',
+        name: 'title',
+        message: 'What is the employees title?',
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'What is the employees salary?',
+      },
+      {
+        type: 'input',
+        name: 'department_id',
+        message: 'What is the employees department_id?',
+      }
+    ])
+
+    .then(answers => {
+      // Use user feedback for... whatever!!
+
+      connection.query("INSERT INTO employee_role (title, salary, department_id) VALUES(?,?,?)", [answers.title, answers.salary, answers.department_id], function (err, data) {
+        if (err) throw err;
       })
-  }
+      console.log("Role Added");
+      connection.end();
+    })
+}
 
 
-// // Prompt user for what to view------------------------------------------------------------------------------------
-// const viewMenu = () => {
 
 
-// }
+// Prompt user for what to add Department ------------------------------------------------------------------------------------
+const viewDepartment = () => {
 
-// Prompt user for what to update------------------------------------------------------------------------------------
-// const updateMenu = () => {
+  connection.query("SELECT * FROM employee_department", function (err, data) {
+    if (err) throw err;
 
+    data.forEach(element => {
+      console.table(element);
+    });
+    connection.end();
+  })
 
-// }
-
+};
 
 promptUser();
