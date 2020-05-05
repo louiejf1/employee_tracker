@@ -245,12 +245,46 @@ const viewDepartment = () => {
   connection.query("SELECT * FROM employee_department", function (err, data) {
     if (err) throw err;
 
-    data.forEach(element => {
-      console.table(element);
-    });
+    // data.forEach(element => {
+    //   console.table(element);
+    // });
+    console.table(data);
     connection.end();
   })
 
 };
+
+
+
+// Prompt user for what to add Department ------------------------------------------------------------------------------------
+const viewEmployee = () => {
+
+  connection.query("SELECT * FROM employee", function (err, data) {
+    if (err) throw err;
+
+    // data.forEach(element => {
+    //   console.table(element);
+    // });
+    console.table(data);
+    connection.end();
+  })
+
+};
+
+
+const viewRole = () => {
+
+  connection.query("SELECT * FROM employee_role", function (err, data) {
+    if (err) throw err;
+
+    // data.forEach(element => {
+    //   console.table(element);
+    // });
+    console.table(data);
+    connection.end();
+  })
+
+};
+
 
 promptUser();
